@@ -1,14 +1,17 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native'
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import { getFilmsImage } from '../API/TMDBApi'
  
 class FilmItems extends React.Component {
 
     render() {
-        const film = this.props.film;
+        const {film, displayDetailForFilm } = this.props
 
         return (
-            <View style={styles.mainContainer}>
+            <TouchableOpacity
+             style={styles.mainContainer}
+             onPress={ () => displayDetailForFilm(film.id)}
+             >
                 
                 <Image style={styles.imageContainer} source={{uri: getFilmsImage(film.poster_path)}} />
                 
@@ -28,7 +31,7 @@ class FilmItems extends React.Component {
                     </View>
                 </View>
                 
-            </View>
+            </TouchableOpacity>
         );
     }
 }
