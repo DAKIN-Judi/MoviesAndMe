@@ -1,8 +1,21 @@
 import React from 'react'
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import { getFilmsImage } from '../API/TMDBApi'
  
 class FilmItems extends React.Component {
+
+    constructor(props) {
+        super(props)
+        
+    }
+
+    _checkFavoriteFilm() {
+        if(this.props.isFavorite) {
+            return (
+                <Image style={styles.favoriteFilmIcon} source={require('../assets/ic_favorite.png')}/>
+            )
+        }
+    }
 
     render() {
         const {film, displayDetailForFilm } = this.props
@@ -18,6 +31,7 @@ class FilmItems extends React.Component {
                 <View style={styles.filmInfoContainer}>
                     
                     <View style={styles.filmTitleAndVote} >
+                        {this._checkFavoriteFilm()}
                         <Text style={styles.filmTitle}>{film.title}</Text>
                         <Text style={styles.filmVote}>{film.vote_average}</Text>
                     </View>
@@ -85,12 +99,17 @@ const styles = StyleSheet.create({
         textAlign: 'justify',
     },
 
-    
-
     filmDate: {
         padding: 10,
         textAlign: 'right'
+    },
+
+    favoriteFilmIcon: {
+        width: 20,
+        height: 20,
     }
 })
 
+
 export default FilmItems
+

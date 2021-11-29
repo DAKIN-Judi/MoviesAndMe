@@ -1,6 +1,7 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView } from "react-native";
+import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
 import { getFilmDetailFromApi, getFilmsImage } from '../API/TMDBApi'
+import { connect } from 'react-redux'
 
 class FilmDetail extends React.Component {
 
@@ -23,6 +24,14 @@ class FilmDetail extends React.Component {
         )
     }
 
+    _toggleFavorite() {
+        const action = { type: 'TOGGLE_FAVORITE', value: this.state.film }
+        this.props.dispatch(action)
+    }
+
+    componentDidUpdate() {
+    }
+
     _displayFilm() {
         const film = this.state.film
         if (film != undefined) {
@@ -34,6 +43,10 @@ class FilmDetail extends React.Component {
 
                     <Text style={styles.filmTitle}>{film.title}</Text>
                     
+                    <TouchableOpacity style={styles.favoriteView} onPress={ () => this._toggleFavorite() }>
+                        {this._displayFavoriteImage()}
+                    </TouchableOpacity>
+
                     <Text style={styles.filmOverview} > {film.overview} </Text>
                     <Text style={styles.defaultText} > Sortie le {film.release_date} </Text>
                     <Text style={styles.defaultText} > Note : {film.vote_average} </Text>
@@ -60,9 +73,18 @@ class FilmDetail extends React.Component {
         }
     }
 
-    render() {
-        const idFilm = this.props.route.params.idFilm
+    _displayFavoriteImage() {
+        var sourceImage = require('../assets/ic_favorite_border.png')
+        if(this.props.favoriteFilm.findIndex(item=> item.id === this.state.film.id) !== -1) {
+            sourceImage = require('../assets/ic_favorite.png')
+        }
 
+        return (
+            <Image style={styles.favoriteImage} source={sourceImage}/>
+        )
+    }
+
+    render() {
         return (
             <View style={styles.mainContainer}>
                 {this._displayFilm()}
@@ -123,8 +145,23 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginRight: 5,
         marginTop: 5
+    },
+
+    favoriteView: {
+        alignItems: 'center',
+    },
+
+    favoriteImage: {
+        width: 40,
+        height: 40,
     }
 })
 
+const mapStateToProps = (state) => {
+    
+    return {
+        favoriteFilm: state.favoriteFilm
+    }
+}
 
-export default FilmDetail
+export default connect(mapStateToProps)(FilmDetail)

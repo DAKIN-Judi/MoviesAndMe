@@ -3,9 +3,9 @@ import { StyleSheet, View, Button, TextInput, FlatList, Text, ActivityIndicator 
 import films from '../Helpers/filmsData';
 import FilmItems from './FilmItems';
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi'
+import { connect } from 'react-redux'
 
 class Search extends React.Component {
-
 
     constructor(props) {
         super(props)
@@ -13,25 +13,25 @@ class Search extends React.Component {
             films: [],
             isLoading: false
         }
-        
+
         this.searchedText = ''
         this.page = 0
         this.totalPage = 0
     }
 
     _loadFilms() {
-        this.setState({ isLoading: true})
-        if(this.searchedText.length > 0) {
+        this.setState({ isLoading: true })
+        if (this.searchedText.length > 0) {
             getFilmsFromApiWithSearchedText(this.searchedText, this.page + 1)
-                    .then(data => { 
-                        this.page = data.page
-                        this.totalPage = data.total_pages
-                        this.setState({ 
-                            films: [ ...this.state.films, ...data.results], 
-                            isLoading: false
-                        })
+                .then(data => {
+                    this.page = data.page
+                    this.totalPage = data.total_pages
+                    this.setState({
+                        films: [...this.state.films, ...data.results],
+                        isLoading: false
                     })
-        }        
+                })
+        }
     }
 
     _searchFilms() {
@@ -42,14 +42,14 @@ class Search extends React.Component {
         }, () => {
             this._loadFilms()
         })
-        
+
     }
-   
-    
+
+
     _displayLoading() {
-        if(this.state.isLoading) {
+        if (this.state.isLoading) {
             return (
-                <View style={ styles.loadingContainer }>
+                <View style={styles.loadingContainer}>
                     <ActivityIndicator size='large' color="#0000ff" />
                 </View>
             )
@@ -61,37 +61,41 @@ class Search extends React.Component {
     }
 
     _displayDetailForFilm = (idFilm) => {
-        this.props.navigation.navigate('Details', {idFilm: idFilm})
+        this.props.navigation.navigate('Details', { idFilm: idFilm })
     }
 
     render() {
-
         return (
 
-            <View style= { styles.searchContainerMain } >
+            <View style={styles.searchContainerMain} >
                 <View style={styles.searchContainer}>
-                    <TextInput onSubmitEditing= {()=> this._searchFilms()} onChangeText={(text)=> this._searchTextInputChanged(text)} style={styles.textInput} placeholder='Titre du film'/>
-                    <Button style={styles.searchButton} title='Rechercher' onPress={()=> this._searchFilms() }/>
+                    <TextInput onSubmitEditing={() => this._searchFilms()} onChangeText={(text) => this._searchTextInputChanged(text)} style={styles.textInput} placeholder='Titre du film' />
+                    <Button style={styles.searchButton} title='Rechercher' onPress={() => this._searchFilms()} />
                 </View>
-                    
+
                 <FlatList
-                data={this.state.films}
-                keyExtractor={(item) => item.id.toString()}
-                onEndReachedThreshold= {2}
-                onEndReached= {()=> { 
-                    if(this.page < this.totalPage) {
-                        this._loadFilms()
+                    data={this.state.films}
+                    keyExtractor={(item) => item.id.toString()}
+                    extraData={this.props.favoriteFilm}
+                    onEndReachedThreshold={2}
+                    onEndReached={() => {
+                        if (this.page < this.totalPage) {
+                            this._loadFilms()
+                        }
+                    }}
+                    renderItem={({ item }) => <FilmItems film={item}
+                        displayDetailForFilm={this._displayDetailForFilm}
+                        isFavorite={this.props.favoriteFilm.findIndex(film => film.id === item.id) !== -1 ? true : false}
+                    />
                     }
-                }}
-                renderItem={({item}) => <FilmItems film={item} displayDetailForFilm={ this._displayDetailForFilm}/>} />
-            
+
+                />
+
                 {this._displayLoading()}
 
-            </View>   
-            
-
+            </View>
         );
-    };    
+    };
 }
 
 const styles = StyleSheet.create({
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: 1,
         paddingLeft: 5,
-        borderColor: '#000010' 
+        borderColor: '#000010'
     },
 
     searchButton: {
@@ -127,4 +131,10 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Search
+const mapStateToProps = (state) => {
+    return {
+        favoriteFilm: state.favoriteFilm
+    }
+}
+
+export default connect(mapStateToProps)(Search)
