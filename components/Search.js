@@ -1,9 +1,9 @@
 import React from 'react'
 import { StyleSheet, View, Button, TextInput, FlatList, Text, ActivityIndicator } from 'react-native'
 import films from '../Helpers/filmsData';
-import FilmItems from './FilmItems';
 import { getFilmsFromApiWithSearchedText } from '../API/TMDBApi'
 import { connect } from 'react-redux'
+import FilmList from './FilmList';
 
 class Search extends React.Component {
 
@@ -17,6 +17,8 @@ class Search extends React.Component {
         this.searchedText = ''
         this.page = 0
         this.totalPage = 0
+
+        this._loadFilms = this._loadFilms.bind(this)
     }
 
     _loadFilms() {
@@ -60,10 +62,6 @@ class Search extends React.Component {
         this.searchedText = text
     }
 
-    _displayDetailForFilm = (idFilm) => {
-        this.props.navigation.navigate('Details', { idFilm: idFilm })
-    }
-
     render() {
         return (
 
@@ -73,24 +71,13 @@ class Search extends React.Component {
                     <Button style={styles.searchButton} title='Rechercher' onPress={() => this._searchFilms()} />
                 </View>
 
-                <FlatList
-                    data={this.state.films}
-                    keyExtractor={(item) => item.id.toString()}
-                    extraData={this.props.favoriteFilm}
-                    onEndReachedThreshold={2}
-                    onEndReached={() => {
-                        if (this.page < this.totalPage) {
-                            this._loadFilms()
-                        }
-                    }}
-                    renderItem={({ item }) => <FilmItems film={item}
-                        displayDetailForFilm={this._displayDetailForFilm}
-                        isFavorite={this.props.favoriteFilm.findIndex(film => film.id === item.id) !== -1 ? true : false}
-                    />
-                    }
-
+                <FilmList 
+                    films={this.state.films}
+                    loadFilms={this._loadFilms}
+                    page={this.page}
+                    totalPage={this.totalPage}
+                    navigation={this.props.navigation}
                 />
-
                 {this._displayLoading()}
 
             </View>

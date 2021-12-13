@@ -11,60 +11,72 @@ const stackNavigator = createStackNavigator()
 
 function MainStackNavigator() {
     return (
-        <NavigationContainer>
             <stackNavigator.Navigator initialRouteName='Rechercher'>
-            
-                <stackNavigator.Screen name='Rechercher' component={Search}
-                    options={{title: 'Rechercher'}}
-                />
+
+                <stackNavigator.Screen name='Rechercher' component={Search}/>
 
                 <stackNavigator.Screen name='Details' component={FilmDetail}
-                    options={{title: 'Details'}}
+                    options={{ title: 'Details' }}
                 />
             </stackNavigator.Navigator>
-        </NavigationContainer>
+    )
+}
+
+const favoriteStackNavigator = createStackNavigator()
+
+function FavoriteStackNavigator() {
+    return (
+        <favoriteStackNavigator.Navigator initialRouteName='Favoris'>
+            <favoriteStackNavigator.Screen name='Favoris' component={Favorite}/>
+            <favoriteStackNavigator.Screen name='FavoriteFilmDetail' component={FilmDetail} options={{ title: 'Details' }}/>
+        </favoriteStackNavigator.Navigator>
+
     )
 }
 
 const MoviesTabNavigator = createBottomTabNavigator()
 
-function MainTabNavigator () {
+function MainTabNavigator() {
     return (
         <NavigationContainer>
-            <MoviesTabNavigator.Navigator screenOptions= {{
-                tabBarShowLabel: false,
-                tabBarActiveBackgroundColor: '#DDDDDDDD'
-            
-            }}>
-            <MoviesTabNavigator.Screen 
-                
-                name='Rechercher' 
-                component={Search}
-                options={{
-                    title: 'Rechercher',
-                    tabBarIcon: ()=> {
-                        return <Image 
-                        style={styles.favoriteImage} 
-                        source={require('../assets/ic_search.png')}/>
-                    }
-                }}
-            />
 
-            <MoviesTabNavigator.Screen 
-                name='Favoris'
-                component={Favorite}
-                options={{
-                    title: 'Favoris', 
-                    tabBarIcon: ()=> {
-                        return <Image 
-                        style={styles.favoriteImage} 
-                        source={require('../assets/ic_favorite.png')}/>
-                    }
-                }}
-            />
+            <MoviesTabNavigator.Navigator screenOptions={{
+                tabBarShowLabel: false,
+                tabBarActiveBackgroundColor: '#DDDDDDDD',
+                headerShown: false
+            }} >
+                <MoviesTabNavigator.Screen
+
+                    name='Home'
+                    component={MainStackNavigator}
+                    options={{
+                        title: 'Rechercher',
+                        tabBarIcon: () => {
+                            return <Image
+                                style={styles.favoriteImage}
+                                source={require('../assets/ic_search.png')} />
+                        }
+                        
+                    }}
+                />
+
+                <MoviesTabNavigator.Screen
+                    name='Favoris'
+                    component={FavoriteStackNavigator}
+                    options={{
+                        title: 'Favoris',
+                        tabBarIcon: () => {
+                            return <Image
+                                style={styles.favoriteImage}
+                                source={require('../assets/ic_favorite.png')} />
+                        }
+                    }}
+                />  
 
             </MoviesTabNavigator.Navigator>
+
         </NavigationContainer>
+
     )
 }
 

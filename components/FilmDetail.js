@@ -1,5 +1,6 @@
-import React from "react";
-import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, Share, View, Text, Image, ActivityIndicator, ScrollView, TouchableOpacity, Platform } from "react-native"
+import React from "react"
+
 import { getFilmDetailFromApi, getFilmsImage } from '../API/TMDBApi'
 import { connect } from 'react-redux'
 
@@ -30,6 +31,28 @@ class FilmDetail extends React.Component {
     }
 
     componentDidUpdate() {
+    }
+
+    _shareFilm() {
+        const { film } =this.state
+        Share.share({ title:  film.title, message: film.overview})
+    }
+
+    _displayFloatingActionButton() {
+        const { film } = this.state
+        if(tilm != undefined && Platform.OS == 'android') {
+            <TouchableOpacity
+                style={styles.floatingActionButtonShare}
+                onPress={this._shareFilm()}
+                >
+
+                <Image
+                    source={{uri: require('')}}
+                    style={styles.shareImage}
+                />
+
+            </TouchableOpacity>
+        }
     }
 
     _displayFilm() {
@@ -89,6 +112,7 @@ class FilmDetail extends React.Component {
             <View style={styles.mainContainer}>
                 {this._displayFilm()}
                 {this._displayLoading()}
+                {this._displayFloatingActionButton()}
             </View>
         )
     }
@@ -154,6 +178,22 @@ const styles = StyleSheet.create({
     favoriteImage: {
         width: 40,
         height: 40,
+    },
+
+    floatingActionButtonShare: {
+        position: 'absolute',
+        width: 60,
+        height: 60,
+        right: 30,
+        bottom: 30,
+        borderRadius: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    shareImage: {
+        width: 30,
+        height: 30,
     }
 })
 
